@@ -1,0 +1,11 @@
+{
+  "work_history": [
+    {
+      "company": "Company A",
+      "role": "Gen AI Developer",
+      "period": "2024 - Present",
+      "description": "Leading AI initiatives and building LLM-powered applications."
+    }
+  ],
+  "skills": ["Python", "JavaScript", "Golang", "LLMs", "React", "FastAPI"]
+}

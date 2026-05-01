@@ -1,0 +1,5 @@
+model_list:
+  - model_name: portfolio-llm
+    litellm_params:
+      model: mistral/mistral-small-latest
+      api_key: "os.environ/MISTRAL_API_KEY"
