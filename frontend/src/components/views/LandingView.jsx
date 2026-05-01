@@ -4,13 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 const LandingView = ({ hasStartedChat }) => {
   return (
     <div className="landing-view">
-      <AnimatePresence>
+      <AnimatePresence mode="popLayout">
         {!hasStartedChat && (
           <motion.div
             initial={{ opacity: 0, height: 'auto' }}
             animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             className="hero-content"
 
           >
@@ -35,7 +35,7 @@ const LandingView = ({ hasStartedChat }) => {
               transition={{ delay: 0.5 }}
               className="intro-text"
             >
-              Ask about a project, my background, or anything else.
+              Ask about me
             </motion.p>
           </motion.div>
         )}
@@ -43,10 +43,9 @@ const LandingView = ({ hasStartedChat }) => {
 
       <style jsx>{`
         .landing-view {
-          height: 100%;
           width: 100%;
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           justify-content: center;
           background: transparent;
         }
@@ -54,8 +53,9 @@ const LandingView = ({ hasStartedChat }) => {
         .hero-content {
           text-align: center;
           width: 100%;
-          max-width: 800px;
+          max-width: 900px;
           margin: 0 auto;
+          padding-top: 15vh;
         }
 
 

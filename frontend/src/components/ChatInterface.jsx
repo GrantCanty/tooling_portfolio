@@ -58,11 +58,11 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
     };
 
     // Calculate delay: use 3000ms if we just finished typing, otherwise use standard typing speed
-    const typingSpeed = 20;
-    const pauseDuration = 3000;
-    const delay = (!isDeleting && placeholderText.length === currentFullText.length) 
-                  ? pauseDuration 
-                  : typingSpeed;
+    const typingSpeed = 23;
+    const pauseDuration = 1200;
+    const delay = (!isDeleting && placeholderText.length === currentFullText.length)
+      ? pauseDuration
+      : typingSpeed;
 
     const timeout = setTimeout(handleTyping, delay);
     return () => clearTimeout(timeout);
@@ -111,10 +111,9 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
   };
 
   return (
-    <div className={`chat-interface ${hasStartedChat ? 'full-height' : 'auto-height'}`}>
+    <div className="chat-interface">
       {hasStartedChat && (
         <div className="messages-container">
-
           <AnimatePresence initial={false}>
             {messages.map((msg, i) => (
               <motion.div
@@ -180,21 +179,16 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
           display: flex;
           flex-direction: column;
           background: transparent;
-        }
-
-        .chat-interface.full-height {
           height: 100%;
+          width: 100%;
+          max-width: 900px;
+          margin: 0 auto;
         }
-
-        .chat-interface.auto-height {
-          height: auto;
-        }
-
 
         .messages-container {
           flex: 1;
           overflow-y: auto;
-          padding: 40px 20px;
+          padding: 20px;
           display: flex;
           flex-direction: column;
           gap: 24px;

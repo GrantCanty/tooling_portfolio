@@ -5,9 +5,7 @@ import './App.css';
 
 function App() {
   const [viewState, setViewState] = useState({ view: 'landing', id: null });
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hi! I'm Grant's Portfolio Agent. How can I help you explore my work today?" }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [hasStartedChat, setHasStartedChat] = useState(false);
 
   const handleToolCall = (toolCall) => {
@@ -26,15 +24,15 @@ function App() {
 
   return (
     <div className={`app-container ${viewState.view} ${hasStartedChat ? 'chat-active' : ''} ${isLanding ? 'layout-landing' : 'layout-internal'}`}>
-      
+
       {/* 
         Single ChatInterface instance to persist state/animations.
         The layout is controlled via the wrapper class.
       */}
       <div className="chat-container-wrapper">
-        <ChatInterface 
-          messages={messages} 
-          setMessages={setMessages} 
+        <ChatInterface
+          messages={messages}
+          setMessages={setMessages}
           onToolCall={handleToolCall}
           onMessageSent={onFirstMessage}
           hasStartedChat={hasStartedChat}
