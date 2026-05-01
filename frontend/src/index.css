@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Helvetica:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
   --bg-dark: #0a0a0c;
@@ -26,10 +26,14 @@ body {
   font-family: var(--font-main);
   background-color: var(--bg-dark);
   color: var(--text-primary);
-  overflow: hidden; /* We'll use custom scroll containers */
+  overflow: hidden;
+  /* We'll use custom scroll containers */
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: var(--font-heading);
 }
 
@@ -41,9 +45,9 @@ h1, h2, h3, h4 {
   border-radius: 16px;
 }
 
-.neon-text {
-  text-shadow: 0 0 10px rgba(66, 153, 225, 0.5), 0 0 20px rgba(66, 153, 225, 0.3);
-}
+/*.neon-text {
+  text-shadow: 0 0 10px red, 0 0 20px red;
+}*/
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {

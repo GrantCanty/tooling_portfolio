@@ -1,12 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, User, Bot, Sparkles } from 'lucide-react';
+import { ArrowUp, User, Bot, Sparkles } from 'lucide-react';
 import axios from 'axios';
 
 const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasStartedChat }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const messagesEndRef = useRef(null);
+
+  const placeholders = [
+    "Tell me about your work experience",
+    "Compare 2 projects you've built",
+    "Where did you go to school?",
+    "Can I see your resume?",
+    "What is your favorite stack?",
+    "What are some of your hobbies?",
+    "Where are you from?",
+    "What languages do you speak?"
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -65,46 +84,75 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
       {hasStartedChat && (
         <div className="messages-container">
 
-        <AnimatePresence initial={false}>
-          {messages.map((msg, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.2 }}
-              className={`message-wrapper ${msg.role}`}
-            >
-              <div className="avatar">
-                {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
-              </div>
-              <div className="message-bubble">
-                {msg.content}
+          <AnimatePresence initial={false}>
+            {messages.map((msg, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.2 }}
+                className={`message-wrapper ${msg.role}`}
+              >
+                <div className="avatar">
+                  {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
+                </div>
+                <div className="message-bubble">
+                  {msg.content}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          {isLoading && (
+            <motion.div className="message-wrapper assistant loading">
+              <div className="typing-indicator">
+                <span></span><span></span><span></span>
               </div>
             </motion.div>
-          ))}
-        </AnimatePresence>
-        {isLoading && (
-          <motion.div className="message-wrapper assistant loading">
-            <div className="typing-indicator">
-              <span></span><span></span><span></span>
-            </div>
-          </motion.div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       )}
 
       <form className="chat-input-area" onSubmit={handleSend}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask me about Grant's projects..."
-          disabled={isLoading}
-        />
-        <button type="submit" disabled={!input.trim() || isLoading}>
-          <Send size={18} />
-        </button>
+        <div className="input-container">
+          <div className="placeholder-wrapper">
+            <AnimatePresence mode="wait">
+              {!input && (
+                <motion.div
+                  key={placeholderIndex}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 0.6, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="animated-placeholder"
+                >
+                  {placeholders[placeholderIndex]}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            disabled={isLoading}
+          />
+          <AnimatePresence>
+            {input.trim() && (
+              <motion.button
+                key="submit-button"
+                initial={{ opacity: 0, scale: 0.8, x: 5 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.8, x: 5 }}
+                type="submit"
+                className="submit-button"
+                disabled={isLoading}
+              >
+                <ArrowUp size={20} />
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
       </form>
 
       <style jsx>{`
@@ -185,33 +233,66 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
 
         .chat-input-area {
           padding: 20px;
-          display: flex;
-          gap: 10px;
-          background: transparent;
           max-width: 800px;
           margin: 0 auto;
           width: 100%;
+          background: transparent;
+        }
+
+        .input-container {
+          position: relative;
+          display: flex;
+          align-items: center;
+          background: var(--bg-card);
+          border: 1px solid var(--border-color);
+          border-radius: 24px;
+          padding: 6px 6px 6px 20px;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-container:focus-within {
+          border-color: var(--accent-blue);
+          box-shadow: 0 4px 24px rgba(66, 153, 225, 0.15);
+          background: rgba(255, 255, 255, 0.05);
         }
 
         input {
           flex: 1;
-          background: var(--bg-card);
-          border: 1px solid var(--border-color);
-          padding: 15px 24px;
-          border-radius: 30px;
+          background: transparent;
+          border: none;
+          padding: 10px 0;
           color: white;
           outline: none;
-          transition: border-color 0.2s;
-          font-size: 16px;
+          font-size: 15px;
+          font-family: inherit;
+          position: relative;
+          z-index: 2;
         }
 
-        input:focus {
-          border-color: var(--accent-blue);
+        .placeholder-wrapper {
+          position: absolute;
+          left: 20px;
+          top: 0;
+          bottom: 0;
+          right: 60px;
+          display: flex;
+          align-items: center;
+          pointer-events: none;
+          z-index: 1;
+          overflow: hidden;
         }
 
-        button {
-          width: 50px;
-          height: 50px;
+        .animated-placeholder {
+          color: var(--text-secondary);
+          font-size: 15px;
+          white-space: nowrap;
+          user-select: none;
+        }
+
+        .submit-button {
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           background: var(--accent-blue);
           color: white;
@@ -220,16 +301,22 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: transform 0.2s;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
           flex-shrink: 0;
+          box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
         }
 
-
-        button:hover:not(:disabled) {
-          transform: scale(1.05);
+        .submit-button:hover:not(:disabled) {
+          transform: translateY(-1px);
+          background: #53acee;
+          box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
         }
 
-        button:disabled {
+        .submit-button:active:not(:disabled) {
+          transform: translateY(0);
+        }
+
+        .submit-button:disabled {
           opacity: 0.5;
           cursor: not-allowed;
         }

@@ -6,7 +6,7 @@ const LandingView = ({ hasStartedChat }) => {
     <div className="landing-view">
       <AnimatePresence>
         {!hasStartedChat && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 'auto' }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
@@ -14,12 +14,11 @@ const LandingView = ({ hasStartedChat }) => {
             className="hero-content"
 
           >
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="neon-text"
             >
-              Grant's Portfolio
+              Grant
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -27,24 +26,16 @@ const LandingView = ({ hasStartedChat }) => {
               transition={{ delay: 0.5 }}
               className="subtitle"
             >
-              Gen AI Developer & Music Producer
+              Gen AI Developer
             </motion.p>
-            
-            <motion.div 
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 1, duration: 1.5 }}
-              className="accent-line"
-            />
-            
-            <motion.p 
+
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1.5 }}
+              transition={{ delay: 0.5 }}
               className="intro-text"
             >
-              I build intelligent systems that bridge the gap between human creativity and machine logic. 
-              Ask me about my work in LLMs, finance, or music production to get started.
+              Ask about a project, my background, or anything else.
             </motion.p>
           </motion.div>
         )}
@@ -57,7 +48,7 @@ const LandingView = ({ hasStartedChat }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: radial-gradient(circle at center, rgba(66, 153, 225, 0.05) 0%, transparent 70%);
+          background: transparent;
         }
 
         .hero-content {
@@ -70,12 +61,9 @@ const LandingView = ({ hasStartedChat }) => {
 
         h1 {
           font-size: 8rem;
-          font-weight: 700;
-          margin-bottom: 10px;
+          font-weight: 500;
           letter-spacing: -2px;
-          background: linear-gradient(to bottom, #fff 0%, #4299e1 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          background: transparent;;
         }
 
         .subtitle {
@@ -84,13 +72,6 @@ const LandingView = ({ hasStartedChat }) => {
           color: var(--text-secondary);
           letter-spacing: 4px;
           text-transform: uppercase;
-        }
-
-        .accent-line {
-          height: 2px;
-          background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
-          margin: 40px auto;
-          width: 300px;
         }
 
         .intro-text {

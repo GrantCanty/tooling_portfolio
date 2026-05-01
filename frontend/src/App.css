@@ -7,6 +7,10 @@
   position: relative;
 }
 
+.app-container.landing.layout-landing {
+  padding-bottom: 80px;
+}
+
 .main-content {
   height: 100%;
   position: relative;
@@ -20,7 +24,8 @@
   z-index: 100;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* Allow shrinking */
+  min-height: 0;
+  /* Allow shrinking */
 }
 
 /* 1. Landing Layout: Pre-Chat */
@@ -29,12 +34,14 @@
   align-items: center;
   justify-content: center;
 }
+
 .layout-landing:not(.chat-active) .main-content {
   order: 1;
   flex: none;
   width: 100%;
   height: auto;
 }
+
 .layout-landing:not(.chat-active) .chat-container-wrapper {
   order: 2;
   width: 100%;
@@ -43,7 +50,6 @@
   background: transparent;
   border: none;
   box-shadow: none;
-  margin-top: 40px;
 }
 
 /* 2. Landing Layout: Active Chat (Full Screen) */
@@ -51,12 +57,15 @@
   flex-direction: column;
   align-items: center;
 }
+
 .layout-landing.chat-active .main-content {
   order: 1;
   flex: none;
   width: 100%;
-  height: auto; /* Allow it to shrink as content fades */
+  height: auto;
+  /* Allow it to shrink as content fades */
 }
+
 .layout-landing.chat-active .chat-container-wrapper {
   order: 2;
   flex: 1;
@@ -66,7 +75,8 @@
   border: none;
   box-shadow: none;
   padding-bottom: 20px;
-  overflow: hidden; /* Ensure history stays contained */
+  overflow: hidden;
+  /* Ensure history stays contained */
 }
 
 
@@ -74,6 +84,7 @@
 .layout-internal {
   flex-direction: row;
 }
+
 .layout-internal .chat-container-wrapper {
   order: 1;
   position: relative;
@@ -87,6 +98,7 @@
   left: auto;
   bottom: auto;
 }
+
 .layout-internal .main-content {
   order: 2;
   flex: 1;
@@ -103,6 +115,7 @@
   .layout-internal {
     flex-direction: column-reverse;
   }
+
   .layout-internal .chat-container-wrapper {
     width: 100%;
     height: 40%;
