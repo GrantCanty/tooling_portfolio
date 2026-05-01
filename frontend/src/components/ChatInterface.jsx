@@ -6,8 +6,11 @@ import axios from 'axios';
 const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasStartedChat }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [placeholderText, setPlaceholderText] = useState('');
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
   const messagesEndRef = useRef(null);
+  const prevInputRef = useRef(input);
 
   const placeholders = [
     "Tell me about your work experience",
@@ -20,12 +23,50 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
     "What languages do you speak?"
   ];
 
+  // Handle resets when input changes (especially when cleared)
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (input) {
+      setPlaceholderText('');
+      setIsDeleting(false);
+    } else if (prevInputRef.current && !input) {
+      // Just became empty
       setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    }
+    prevInputRef.current = input;
+  }, [input, placeholders.length]);
+
+  useEffect(() => {
+    if (input) return;
+
+    const currentFullText = placeholders[placeholderIndex];
+
+    const handleTyping = () => {
+      if (!isDeleting) {
+        if (placeholderText.length < currentFullText.length) {
+          setPlaceholderText(currentFullText.slice(0, placeholderText.length + 1));
+        } else {
+          setIsDeleting(true);
+        }
+      } else {
+        if (placeholderText.length > 0) {
+          setPlaceholderText(currentFullText.slice(0, placeholderText.length - 1));
+        } else {
+          setIsDeleting(false);
+          setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+        }
+      }
+    };
+
+    // Calculate delay: use 3000ms if we just finished typing, otherwise use standard typing speed
+    const typingSpeed = 20;
+    const pauseDuration = 3000;
+    const delay = (!isDeleting && placeholderText.length === currentFullText.length) 
+                  ? pauseDuration 
+                  : typingSpeed;
+
+    const timeout = setTimeout(handleTyping, delay);
+    return () => clearTimeout(timeout);
+  }, [input, placeholderText, isDeleting, placeholderIndex, placeholders]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -51,16 +92,6 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
       });
 
       let content = response.data.content;
-      if (!content && response.data.tool_calls && response.data.tool_calls.length > 0) {
-        const tool = response.data.tool_calls[0];
-        if (tool.name === 'navigate_to_view') {
-          content = `Navigating to ${tool.arguments.view}...`;
-        } else if (tool.name === 'compare_projects') {
-          content = `Comparing projects...`;
-        } else {
-          content = `Action triggered.`;
-        }
-      }
 
       if (content) {
         const botMessage = { role: 'assistant', content: content };
@@ -115,21 +146,10 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
 
       <form className="chat-input-area" onSubmit={handleSend}>
         <div className="input-container">
-          <div className="placeholder-wrapper">
-            <AnimatePresence mode="wait">
-              {!input && (
-                <motion.div
-                  key={placeholderIndex}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 0.6, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="animated-placeholder"
-                >
-                  {placeholders[placeholderIndex]}
-                </motion.div>
-              )}
-            </AnimatePresence>
+          <div className="placeholder-wrapper" style={{ opacity: input ? 0 : 1, pointerEvents: 'none' }}>
+            <div className="animated-placeholder">
+              {placeholderText}
+            </div>
           </div>
           <input
             type="text"
@@ -288,6 +308,9 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
           font-size: 15px;
           white-space: nowrap;
           user-select: none;
+          opacity: 0.6;
+          display: flex;
+          align-items: center;
         }
 
         .submit-button {
