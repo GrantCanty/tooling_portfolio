@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUp, User, Bot, Sparkles } from 'lucide-react';
+import { ArrowUp, Sparkles } from 'lucide-react';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasStartedChat }) => {
   const [input, setInput] = useState('');
@@ -10,7 +12,14 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
   const prevInputRef = useRef(input);
+
+  useEffect(() => {
+    if (!isLoading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isLoading]);
 
   const placeholders = [
     "Tell me about your work experience",
@@ -99,7 +108,22 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
       }
 
       if (response.data.tool_calls && response.data.tool_calls.length > 0) {
-        response.data.tool_calls.forEach(call => onToolCall(call));
+        response.data.tool_calls.forEach(call => {
+          onToolCall(call);
+
+          // Generate a friendly confirmation message if the LLM didn't provide one
+          if (!content) {
+            let confirmMsg = "Processing action...";
+            if (call.name === 'navigate_to_view') {
+              const viewName = call.arguments?.view || 'view';
+              confirmMsg = `*Navigating to the **${viewName}** view...*`;
+            } else if (call.name === 'compare_projects') {
+              confirmMsg = `*Opening project comparison...*`;
+            }
+
+            setMessages(prev => [...prev, { role: 'assistant', content: confirmMsg }]);
+          }
+        });
       }
 
     } catch (error) {
@@ -123,11 +147,10 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
                 transition={{ duration: 0.2 }}
                 className={`message-wrapper ${msg.role}`}
               >
-                <div className="avatar">
-                  {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
-                </div>
                 <div className="message-bubble">
-                  {msg.content}
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {msg.content}
+                  </ReactMarkdown>
                 </div>
               </motion.div>
             ))}
@@ -150,11 +173,21 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
               {placeholderText}
             </div>
           </div>
-          <input
-            type="text"
+          <textarea
+            ref={inputRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            disabled={isLoading}
+            onChange={(e) => {
+              setInput(e.target.value);
+              e.target.style.height = 'auto';
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend(e);
+              }
+            }}
+            rows={1}
           />
           <AnimatePresence>
             {input.trim() && (
@@ -166,6 +199,7 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
                 type="submit"
                 className="submit-button"
                 disabled={isLoading}
+                onMouseDown={(e) => e.preventDefault()}
               >
                 <ArrowUp size={20} />
               </motion.button>
@@ -181,8 +215,6 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
           background: transparent;
           height: 100%;
           width: 100%;
-          max-width: 900px;
-          margin: 0 auto;
         }
 
         .messages-container {
@@ -207,42 +239,25 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
         }
 
 
-        .avatar {
-          width: 28px;
-          height: 28px;
-          border-radius: 8px;
-          background: var(--bg-card);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px solid var(--border-color);
-          color: var(--text-secondary);
-          flex-shrink: 0;
-        }
-
-        .user .avatar {
-          background: var(--accent-blue);
-          color: white;
-        }
-
         .message-bubble {
           padding: 12px 16px;
-          border-radius: 12px;
           font-size: 14px;
           line-height: 1.5;
-          background: var(--bg-card);
-          border: 1px solid var(--border-color);
+          width: 100%;
         }
 
         .assistant .message-bubble {
-          border-top-left-radius: 2px;
-          background: var(--bg-chat-bot);
-          border-color: rgba(66, 153, 225, 0.2);
+          background: transparent;
+          border: none;
+          color: var(--text-primary);
+          padding: 12px 0;
         }
 
         .user .message-bubble {
-          border-top-right-radius: 2px;
+          border-radius: 12px;
           background: var(--bg-chat-user);
+          border: 1px solid var(--border-color);
+          max-width: max-content;
         }
 
         .chat-input-area {
@@ -271,7 +286,7 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
           background: rgba(255, 255, 255, 0.05);
         }
 
-        input {
+        textarea {
           flex: 1;
           background: transparent;
           border: none;
@@ -282,6 +297,10 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
           font-family: inherit;
           position: relative;
           z-index: 2;
+          resize: none;
+          max-height: 200px;
+          overflow-y: auto;
+          line-height: 1.5;
         }
 
         .placeholder-wrapper {
