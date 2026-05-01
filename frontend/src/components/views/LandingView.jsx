@@ -18,16 +18,8 @@ const LandingView = ({ hasStartedChat }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              Grant
+              Hey, I'm Grant
             </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="subtitle"
-            >
-              Gen AI Developer
-            </motion.p>
 
             <motion.p
               initial={{ opacity: 0 }}
@@ -51,34 +43,36 @@ const LandingView = ({ hasStartedChat }) => {
         }
 
         .hero-content {
-          text-align: center;
           width: 100%;
-          max-width: 900px;
+          max-width: 800px;
           margin: 0 auto;
+          padding: 0 20px;
         }
 
 
         h1 {
-          font-size: 8rem;
-          font-weight: 500;
+          font-size: 4rem;
+          font-weight: 300;
           letter-spacing: -2px;
-          background: transparent;;
+          background: transparent;
+          text-align: left;
         }
 
         .subtitle {
           font-family: var(--font-heading);
-          font-size: 1.5rem;
+          font-size: 4.5rem;
           color: var(--text-secondary);
           letter-spacing: 4px;
           text-transform: uppercase;
         }
 
         .intro-text {
-          font-size: 1.2rem;
+          font-size: 2.2rem;
+          font-weight: 200;
           color: var(--text-secondary);
           line-height: 1.6;
           max-width: 600px;
-          margin: 0 auto;
+          text-align: left;
         }
 
         @media (max-width: 768px) {
