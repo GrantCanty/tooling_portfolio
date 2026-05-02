@@ -53,9 +53,41 @@ RULES:
             for p in projects:
                 context += f"- id: '{p['id']}', title: '{p['title']}', description: '{p['description']}'\n"
             
-            context += "\nEXPERIENCE & EDUCATION:\n"
+            context += "\nEDUCATION:\n"
             for e in education:
                 context += f"- {e['degree']} from {e['institution']} ({e['year']})\n"
+
+            context += "\nRESUME:\n"
+            context += "RESUME EDUCATION:\n"
+            for r in resume['education']:
+                context += f"- {r['degree']} from {r['institution']} ({r['end_date']})\n"
+            
+            context += "\nRESUME WORK EXPERIENCE:\n"
+            for r in resume['work_experience']:
+                context += f"- {r['company']} ({r['start_date']} - {r['end_date']}):\n"
+                for role in r['roles']:
+                    print(f'roleeeee: {role}')
+                    context += f"  - {role['title']} from {r['location']} ({role['start_date']} - {role['end_date']})\n"
+                    for resp in role['responsibilities']:
+                        context += f"    - {resp}\n"
+            
+            context += f"\nRESUME PROJECTS:\n"
+            for p in resume['programming_projects']:
+                context += f"- {p['name']} ({p['start_date']} - {p['end_date']}): {p['description']}\n"
+
+            context += f"\nRESUME LEADERSHIP:\n"
+            for l in resume['leadership']:
+                context += f"- {l['organization']} ({l['start_date']} - {l['end_date']}):\n"
+                for role in l['roles']:
+                    context += f"  - {role['title']} from {l['location']} ({role['start_date']} - {role['end_date']})\n"
+                    for resp in role['responsibilities']:
+                        context += f"    - {resp}\n"    
+            
+            context += f"\nRESUME SKILLS: \n"
+            for l in resume['skills']:
+                context += f"- {l}:\n"
+                for s in resume['skills'][l]:
+                    context += f"  - {s}\n"
             
             return context
         except Exception as e:

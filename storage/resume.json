@@ -1,11 +1,169 @@
 {
-  "work_history": [
+  "name": "Grant Canty",
+  "contact": {
+    "phone": "06 86 72 97 49",
+    "email": "GC933815@ohio.edu",
+    "github": "GitHub",
+    "linkedin": "LinkedIn"
+  },
+  "education": [
     {
-      "company": "Company A",
-      "role": "Gen AI Developer",
-      "period": "2024 - Present",
-      "description": "Leading AI initiatives and building LLM-powered applications."
+      "institution": "Le Conservatoire National des Arts et Métiers",
+      "location": "Paris, FR",
+      "degree": "International Master",
+      "gpa": "14.2 / 20",
+      "end_date": "June 2025",
+      "program": "Artificial Intelligence for Connected Industries"
+    },
+    {
+      "institution": "Ohio University, College of Business",
+      "location": "Athens, Ohio, USA",
+      "degree": "Bachelor of Business Administration",
+      "gpa": "3.3 / 4.0",
+      "gpa_equivalent": "14 / 20",
+      "end_date": "December 2021",
+      "majors": [
+        "Finance",
+        "International Business"
+      ],
+      "certificate": "Financial Programming",
+      "minor": "French",
+      "minor_equivalent": "Mention Bien",
+      "honors": [
+        "Dean List: Fall 2017",
+        "Dean List: Fall 2021"
+      ]
     }
   ],
-  "skills": ["Python", "JavaScript", "Golang", "LLMs", "React", "FastAPI"]
+  "work_experience": [
+    {
+      "company": "Fidelity Investments",
+      "location": "Denver, Colorado, USA",
+      "work_type": "Hybrid",
+      "start_date": "February 2022",
+      "end_date": "July 2024",
+      "roles": [
+        {
+          "title": "High Net Worth Associate",
+          "start_date": "January 2023",
+          "end_date": "July 2024",
+          "responsibilities": [
+            "Provide efficient communication strategies on product and service calls, averaging over 5 clients per hour.",
+            "Maintain high attention to detail with 0 errors on equity and mutual fund trades in client accounts.",
+            "Problem solving and troubleshooting errors on website using system applications in client accounts."
+          ]
+        }
+      ]
+    },
+    {
+      "company": "AIESEC in France",
+      "location": "Paris, France",
+      "work_type": "Virtual & Hybrid",
+      "start_date": "August 2019",
+      "end_date": "July 2021",
+      "roles": [
+        {
+          "title": "National Head of Marketing",
+          "start_date": "August 2020",
+          "end_date": "July 2021",
+          "responsibilities": [
+            "Built the organization's 1st system to automatically update data trackers using Google Apps Scripts, Google Sheets, and AIESEC's internal GraphQL API.",
+            "Created an emailing system that contacted marketing leads using Google Sheets and Google Apps Scripts.",
+            "Conducted semi-annual PESTEL, SWOT, competitor analyses, and market research to gather insights and adjust organizational processes.",
+            "Delivered 21 sessions at 7 conferences and bi-weekly meetings with marketing team members.",
+            "Grew followers on LinkedIn and Instagram by 17% & 11% with no paid in-platform advertisements."
+          ]
+        }
+      ]
+    },
+    {
+      "company": "Grant's Lawn Care Service",
+      "location": "Worthington, Ohio, USA",
+      "start_date": "April 2012",
+      "end_date": "August 2017",
+      "roles": [
+        {
+          "title": "Founder",
+          "start_date": "April 2012",
+          "end_date": "August 2017",
+          "responsibilities": [
+            "Founded business that generated $65,000 revenue in 6 years as a high school and university student.",
+            "Managed 35 lawns a week while maintaining grounds, fertilizing lawns, and coordinating customer service."
+          ]
+        }
+      ]
+    }
+  ],
+  "programming_projects": [
+    {
+      "name": "Sound Classifier",
+      "start_date": "April 2025",
+      "end_date": "Present",
+      "description": "Developing an audio classification system to distinguish instrument categories and playback intent (loop vs one-shot, forward vs reverse) using CNN-GRU Machine Learning architectures on spectral and feature data."
+    },
+    {
+      "name": "Waste Level Generation and Collection",
+      "start_date": "February 2025",
+      "end_date": "February 2025",
+      "description": "Created Machine Learning system using TensorFlow in team of 3 to predict waste levels for a city based on historical waste data, generate routes to collect full waste bins, and real time implementation using Docker."
+    },
+    {
+      "name": "Crypto Trader (Bruit)",
+      "start_date": "December 2022",
+      "end_date": "Present",
+      "description": "Building a client for Kraken Crypto exchange API using Golang. Implemented websockets and concurrency."
+    }
+  ],
+  "leadership": [
+    {
+      "organization": "AIESEC in Ohio",
+      "location": "Athens, Ohio, USA",
+      "start_date": "February 2018",
+      "end_date": "January 2020",
+      "roles": [
+        {
+          "title": "Local Committee Vice President of Outgoing Global Volunteer",
+          "start_date": "February 2019",
+          "end_date": "January 2020",
+          "responsibilities": [
+            "Led a team of 7 to achieve $11,000 in yearly revenue through volunteer sign-ups.",
+            "Increased conversion rates in stages of the customer journey by 5% and 21%."
+          ]
+        }
+      ]
+    }
+  ],
+  "skills": {
+    "intermediate": [
+      "Node JS",
+      "Golang",
+      "React",
+      "C++",
+      "Python",
+      "Photoshop",
+      "macOS",
+      "Windows",
+      "Linux"
+    ],
+    "beginner": [
+      "Java",
+      "SQL",
+      "Git",
+      "GitHub",
+      "Figma",
+      "Trello",
+      "Asana",
+      "Agile Development"
+    ]
+  },
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Native"
+    },
+    {
+      "language": "French",
+      "proficiency": "Conversational"
+    }
+  ]
 }
