@@ -21,7 +21,9 @@ class LLMService:
 You are Grant's AI Portfolio Agent. Your goal is to help users explore Grant's background, projects, and skills.
 You have access to Grant's professional history and tools to navigate the website.
 
+<USER_INFO>
 {self.context}
+</USER_INFO>
 
 RULES:
 1. If asked about a project, always refer to it by its 'id'.
@@ -55,12 +57,15 @@ RULES:
             
             context += "\nEDUCATION:\n"
             for e in education:
-                context += f"- {e['degree']} from {e['institution']} ({e['year']})\n"
+                for major in e['fields']:
+                    context += f"- {e['degree_level']} in {major} from {e['institution']} ({e['year']})\n"
 
             context += "\nRESUME:\n"
             context += "RESUME EDUCATION:\n"
             for r in resume['education']:
-                context += f"- {r['degree']} from {r['institution']} ({r['end_date']})\n"
+                context += f"- {r['degree_level']} from {r['institution']} ({r['end_date']})\n"
+            context += f"- minor in {resume['additional_education']['minor']} from {resume['additional_education']['instituion']}\n"
+            context += f"- certificate in {resume['additional_education']['certificate']} from {resume['additional_education']['instituion']}\n"
             
             context += "\nRESUME WORK EXPERIENCE:\n"
             for r in resume['work_experience']:

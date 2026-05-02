@@ -1,12 +1,48 @@
 [
   {
-    "degree": "Master's in AI",
+    "degree_level": "Master's",
     "institution": "ECE Paris",
-    "year": "2026"
+    "year": "2026",
+    "fields": [
+      "Artificial Intelligence"
+    ],
+    "location": "Paris, FR"
   },
   {
-    "degree": "Bachelor's in Finance",
+    "degree_level": "Master's",
+    "institution": "Le Conservatoire National des Arts et Métiers",
+    "year": "2025",
+    "fields": [
+      "Artificial Intelligence for Connected Industries"
+    ],
+    "location": "Paris, FR"
+  },
+  {
+    "degree_level": "Bachelor's of Arts",
     "institution": "Ohio University",
-    "year": "2021"
+    "year": "2021",
+    "fields": [
+      "Finance (Investments)",
+      "International Business"
+    ],
+    "location": "Athens, OH, USA"
+  },
+  {
+    "degree_level": "Certificate",
+    "institution": "Ohio University",
+    "year": "2021",
+    "fields": [
+      "Financial Programming"
+    ],
+    "location": "Athens, OH, USA"
+  },
+  {
+    "degree_level": "Minor",
+    "institution": "Ohio University",
+    "year": "2021",
+    "fields": [
+      "French"
+    ],
+    "location": "Athens, OH, USA"
   }
 ]

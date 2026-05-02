@@ -10,31 +10,36 @@
     {
       "institution": "Le Conservatoire National des Arts et Métiers",
       "location": "Paris, FR",
-      "degree": "International Master",
+      "degree_level": "International Master",
       "gpa": "14.2 / 20",
       "end_date": "June 2025",
-      "program": "Artificial Intelligence for Connected Industries"
+      "majors": [
+        "Artificial Intelligence for Connected Industries"
+      ]
     },
     {
       "institution": "Ohio University, College of Business",
       "location": "Athens, Ohio, USA",
-      "degree": "Bachelor of Business Administration",
+      "degree_level": "Bachelor of Business Administration",
       "gpa": "3.3 / 4.0",
       "gpa_equivalent": "14 / 20",
       "end_date": "December 2021",
       "majors": [
         "Finance",
         "International Business"
-      ],
-      "certificate": "Financial Programming",
-      "minor": "French",
-      "minor_equivalent": "Mention Bien",
-      "honors": [
-        "Dean List: Fall 2017",
-        "Dean List: Fall 2021"
       ]
     }
   ],
+  "additional_education": {
+    "certificate": "Financial Programming",
+    "minor": "French",
+    "institution": "Ohio University",
+    "honors_equivalent": "Mention Bien",
+    "honors": [
+      "Dean List: Fall 2017",
+      "Dean List: Fall 2021"
+    ]
+  },
   "work_experience": [
     {
       "company": "Fidelity Investments",
