@@ -5,7 +5,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasStartedChat }) => {
+const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasStartedChat, currentView }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [placeholderText, setPlaceholderText] = useState('');
@@ -97,7 +97,8 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
       console.log(`sending message to ${import.meta.env.VITE_API_URL}`)
       const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8888'}/chat`, {
         message: input,
-        history: messages.slice(-10) // Send last 10 messages for context
+        history: messages.slice(-10), // Send last 10 messages for context
+        current_view: currentView
       });
 
       let content = response.data.content;

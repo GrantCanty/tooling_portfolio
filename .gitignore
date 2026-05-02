@@ -4,3 +4,5 @@ tooling.ipynb
 __pycache__
 ROADMAP.md
 *.webp
+
+backend/app/ai/loadingg.py

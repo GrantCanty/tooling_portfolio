@@ -94,8 +94,12 @@ RULES:
             print(f"Error loading context: {e}")
             return "CANDIDATE PROFILE: Grant, Gen AI Developer."
 
-    async def chat(self, message: str, history: list):
-        messages = [{"role": "system", "content": self.system_instruction}]
+    async def chat(self, message: str, history: list, current_view: str = None):
+        dynamic_instruction = self.system_instruction
+        if current_view:
+            dynamic_instruction += f"\n\nCURRENT STATE: The user is currently looking at the '{current_view}' view. Do not use the navigate_to_view tool to navigate to this view, as they are already there. If they ask about something on this view, just respond conversationally."
+
+        messages = [{"role": "system", "content": dynamic_instruction}]
         for msg in history:
             messages.append(msg)
         messages.append({"role": "user", "content": message})

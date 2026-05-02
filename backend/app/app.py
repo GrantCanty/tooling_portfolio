@@ -22,11 +22,12 @@ llm_service = LLMService()
 class ChatRequest(BaseModel):
     message: str
     history: List[dict] = []
+    current_view: Optional[str] = None
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
     try:
-        response = await llm_service.chat(request.message, request.history)
+        response = await llm_service.chat(request.message, request.history, request.current_view)
         return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

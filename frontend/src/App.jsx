@@ -36,8 +36,8 @@ function App() {
           onToolCall={handleToolCall}
           onMessageSent={onFirstMessage}
           hasStartedChat={hasStartedChat}
+          currentView={viewState.view}
         />
-
       </div>
 
       <main className="main-content">
