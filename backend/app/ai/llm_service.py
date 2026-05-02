@@ -3,8 +3,13 @@ import json
 from openai import OpenAI
 from dotenv import load_dotenv
 from tools.tools import navigate_to_view, compare_projects
+import logging
+from datetime import datetime
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 class LLMService:
     def __init__(self):
@@ -21,9 +26,7 @@ class LLMService:
 You are Grant's AI Portfolio Agent. Your goal is to help users explore Grant's background, projects, and skills.
 You have access to Grant's professional history and tools to navigate the website.
 
-<USER_INFO>
 {self.context}
-</USER_INFO>
 
 RULES:
 1. If asked about a project, always refer to it by its 'id'.
@@ -31,7 +34,8 @@ RULES:
 3. If the user is just curious about the project but is not asking to actually see it, just respond by chatting.
 4. Only use the comparison compare project tool if the user asks about looking at 2 projects at once.
 5. ALWAYS provide a brief, friendly confirmation message in the 'content' field when you call a tool (e.g., "Sure, let's take a look at my projects!").
-"""
+"""     
+        logger.info(self.system_instruction)
         self.tools = [
             navigate_to_view,
             compare_projects
@@ -64,14 +68,13 @@ RULES:
             context += "RESUME EDUCATION:\n"
             for r in resume['education']:
                 context += f"- {r['degree_level']} from {r['institution']} ({r['end_date']})\n"
-            context += f"- minor in {resume['additional_education']['minor']} from {resume['additional_education']['instituion']}\n"
-            context += f"- certificate in {resume['additional_education']['certificate']} from {resume['additional_education']['instituion']}\n"
+            context += f"- minor in {resume['additional_education']['minor']} from {resume['additional_education']['institution']}\n"
+            context += f"- certificate in {resume['additional_education']['certificate']} from {resume['additional_education']['institution']}\n"
             
             context += "\nRESUME WORK EXPERIENCE:\n"
             for r in resume['work_experience']:
                 context += f"- {r['company']} ({r['start_date']} - {r['end_date']}):\n"
                 for role in r['roles']:
-                    print(f'roleeeee: {role}')
                     context += f"  - {role['title']} from {r['location']} ({role['start_date']} - {role['end_date']})\n"
                     for resp in role['responsibilities']:
                         context += f"    - {resp}\n"
@@ -102,7 +105,7 @@ RULES:
     async def chat(self, message: str, history: list, current_view: str = None):
         dynamic_instruction = self.system_instruction
         if current_view:
-            dynamic_instruction += f"\n\nCURRENT STATE: The user is currently looking at the '{current_view}' view. Do not use the navigate_to_view tool to navigate to this view, as they are already there. If they ask about something on this view, just respond conversationally."
+            dynamic_instruction += f"\n\nCURRENT STATE: The user is currently looking at the '{current_view}' view. Do not use the navigate_to_view tool to navigate to this view, as they are already there. If they ask about something on this view, just respond conversationally.\n\nTODAY'S DATE: {datetime.now().strftime('%Y-%m-%d')}"
 
         messages = [{"role": "system", "content": dynamic_instruction}]
         for msg in history:
