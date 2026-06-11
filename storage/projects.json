@@ -22,7 +22,7 @@
     "image": "/images/music-gen-app.webp"
   },
   {
-    "id": "crypto-trader",
+    "id": "imported-bruit",
     "title": "Crypto Trader",
     "description": "A Go client to interact with the Kraken Crypto Exchange WebSocket & Rest APIs",
     "technologies": [
