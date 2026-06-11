@@ -15,7 +15,15 @@ const ViewManager = ({ viewState, hasStartedChat, onNavigate }) => {
       case 'landing':
         return <LandingView hasStartedChat={hasStartedChat} />;
       case 'projects':
-        return <ProjectsView id={viewState.id} onNavigate={onNavigate} />;
+        return (
+          <ProjectsView 
+            id={viewState.id} 
+            initialTab={viewState.tab}
+            initialBranch={viewState.branch}
+            initialFilePath={viewState.filePath}
+            onNavigate={onNavigate} 
+          />
+        );
       case 'resume':
         return <ResumeView />;
       case 'education':

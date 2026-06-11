@@ -18,28 +18,36 @@ class LLMService:
             base_url=os.getenv("LLM_PROXY_URL", "http://localhost:4000")
         )
         self.model = "mistral/mistral-small-latest"
-        
-        # Load candidate data from storage
+        self.refresh_context()
+        self.tools = [
+            navigate_to_view,
+            compare_projects,
+            read_project_file
+        ]
+
+    def refresh_context(self):
         self.context = self._load_context()
-        
         self.system_instruction = f"""
 You are Grant's AI Portfolio Agent. Your goal is to help users explore Grant's background, projects, and skills.
 You have access to Grant's professional history and tools to navigate the website.
 
 {self.context}
 
-RULES:
+RULES & TOOL-CALLING TRIGGERS:
 1. If asked about a project, always refer to it by its 'id'.
-2. If the user query is about seeing something, use the navigate_to_view tool.
-3. If the user is just curious about the project but is not asking to actually see it, just respond by chatting.
-4. Only use the comparison compare project tool if the user asks about looking at 2 projects at once.
-5. ALWAYS provide a brief, friendly confirmation message in the 'content' field when you call a tool (e.g., "Sure, let's take a look at my projects!").
-"""     
-        self.tools = [
-            navigate_to_view,
-            compare_projects,
-            read_project_file
-        ]
+2. CRITICAL NAVIGATION RULE: If the user asks to "see", "show", "open", "go to", "take me to", "switch to", "view", or "display" any file, folder, branch, or tab, you MUST call the `navigate_to_view` tool. Do NOT answer in text first, and do NOT explain the code first without calling the tool.
+3. If the user mentions a specific file name (e.g., ending with .go, .py, .jsx, etc.) in a directive manner (like "look at list.go", "open client.go", "take me to main.go"), you MUST invoke `navigate_to_view` with `file_path` set to the file's exact relative path.
+4. When passing a `file_path` to `navigate_to_view`, always match the user's requested filename to the exact relative path from the "Available files in this project" list (e.g., match 'list.go' to 'bruit/shared_types/list.go').
+5. If the user is just curious about a project but is not asking to navigate to or see any specific screen, file, or branch, respond conversationally.
+6. Only use the comparison `compare_projects` tool if the user asks to compare or look at 2 projects side by side.
+7. ALWAYS provide a brief, friendly confirmation message in the 'content' field when you call a tool (e.g., "Sure, let's open list.go!").
+
+FEW-SHOT EXAMPLES:
+- User: "take me to list.go" -> Tool Call: navigate_to_view(view="projects", id="imported-bruit", file_path="bruit/shared_types/list.go")
+- User: "show me client.go" -> Tool Call: navigate_to_view(view="projects", id="imported-bruit", file_path="bruit/client/client.go")
+- User: "go to commits tab" -> Tool Call: navigate_to_view(view="projects", id="imported-bruit", tab="commits")
+- User: "switch to feature/add_testing" -> Tool Call: navigate_to_view(view="projects", id="imported-bruit", branch="feature/add_testing")
+"""
 
     def _load_context(self):
         storage_path = "/storage"
@@ -151,12 +159,29 @@ RULES:
                         proj_details = json.load(f)
                     file_list = proj_details.get("file_paths", [])
                     file_list_str = ", ".join(file_list)
+                    
+                    branches = proj_details.get("branches", [])
+                    active_branch = proj_details.get("active_branch", "main")
+                    commits = proj_details.get("commits", [])
+                    has_more = proj_details.get("has_more_commits", False)
+                    
+                    commits_str = ""
+                    for c in commits:
+                        commits_str += f"- {c.get('sha')[:7]} by {c.get('author_login') or c.get('author_name')} on {c.get('date')}: {c.get('message')}\n"
+                    if has_more:
+                        commits_str += "- ... more commits exist on GitHub\n"
+                        
                     dynamic_instruction += f"""
 
 ACTIVE PROJECT CONTEXT:
 You are currently viewing the project '{proj_details.get('title')}' (id: '{current_project_id}').
 Project description: {proj_details.get('description')}
 GitHub Repository: {proj_details.get('github_url', 'N/A')}
+Active Branch: '{active_branch}'
+Available Branches: {branches if branches else "['main']"}
+
+Recent Commits (on active branch):
+{commits_str if commits_str else "No commits available."}
 
 Available files in this project:
 [{file_list_str}]

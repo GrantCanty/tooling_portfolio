@@ -1,6 +1,6 @@
 {
   "id": "imported-bruit",
-  "title": "Crypto Trader",
+  "title": "bruit",
   "description": null,
   "technologies": [
     "Go"
@@ -135,17 +135,8 @@
     "fix/remove_panic",
     "main"
   ],
-  "active_branch": "main",
+  "active_branch": "fix/remove_panic",
   "commits": [
-    {
-      "sha": "394ea7b915811fc8beaaa67b2a58553bb407a59a",
-      "message": "Merge pull request #2 from GrantCanty/fix/remove_panic\n\nFix/remove panic",
-      "author_name": "Grant Canty",
-      "author_email": "54595001+GrantCanty@users.noreply.github.com",
-      "author_login": "GrantCanty",
-      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
-      "date": "2026-06-07T01:57:32Z"
-    },
     {
       "sha": "cfeea5d98935fb38f2ad2247816b31758b43cb14",
       "message": "removed panics in *Decoder functions. added retry options for *SocketGuard functions",
@@ -271,6 +262,15 @@
       "author_login": "GrantCanty",
       "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
       "date": "2026-06-06T22:30:46Z"
+    },
+    {
+      "sha": "bfab1736335808648dd13114a9e1721db8496851",
+      "message": "added error handling to SubscribeToOpenOrders func",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-06T22:29:59Z"
     }
   ],
   "has_more_commits": true

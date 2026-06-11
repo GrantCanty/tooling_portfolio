@@ -22,7 +22,7 @@ const Github = ({ size = 20, className, style }) => (
   </svg>
 );
 
-const ProjectsView = ({ id, onNavigate }) => {
+const ProjectsView = ({ id, initialTab, initialBranch, initialFilePath, onNavigate }) => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -103,6 +103,54 @@ const ProjectsView = ({ id, onNavigate }) => {
 
     fetchProjectDetails();
   }, [id]);
+
+  // Listen to deep-links / AI tool navigation requests
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
+  useEffect(() => {
+    if (initialBranch && projectDetails && projectDetails.github_url && initialBranch !== projectDetails.active_branch) {
+      handleBranchChange(initialBranch);
+    }
+  }, [initialBranch, projectDetails]);
+
+  useEffect(() => {
+    if (initialFilePath) {
+      let matchedPath = initialFilePath;
+      
+      // Fuzzy match: if not found exactly, look for a file ending with initialFilePath
+      if (projectDetails && projectDetails.files && !projectDetails.files[initialFilePath]) {
+        const normalizedInput = initialFilePath.replace(/\\/g, '/').toLowerCase();
+        const found = Object.keys(projectDetails.files).find(p => {
+          const normP = p.replace(/\\/g, '/').toLowerCase();
+          return normP === normalizedInput || normP.endsWith('/' + normalizedInput);
+        });
+        if (found) {
+          matchedPath = found;
+        }
+      }
+      
+      setSelectedFile(matchedPath);
+      setActiveTab('code');
+      
+      // Auto-expand parent directories in the tree explorer
+      const parts = matchedPath.split('/');
+      if (parts.length > 1) {
+        setOpenFolders(prev => {
+          const nextOpen = { ...prev };
+          let currentPath = '';
+          for (let i = 0; i < parts.length - 1; i++) {
+            currentPath = currentPath ? `${currentPath}/${parts[i]}` : parts[i];
+            nextOpen[currentPath] = true;
+          }
+          return nextOpen;
+        });
+      }
+    }
+  }, [initialFilePath, projectDetails]);
 
   const handleImport = async (e) => {
     e.preventDefault();

@@ -142,20 +142,7 @@ async def import_project(request: ImportRequest):
             json.dump(projects, f, indent=2)
             
         # Re-initialize LLM context so the agent knows about the new project
-        llm_service.context = llm_service._load_context()
-        llm_service.system_instruction = f"""
-You are Grant's AI Portfolio Agent. Your goal is to help users explore Grant's background, projects, and skills.
-You have access to Grant's professional history and tools to navigate the website.
-
-{llm_service.context}
-
-RULES:
-1. If asked about a project, always refer to it by its 'id'.
-2. If the user query is about seeing something, use the navigate_to_view tool.
-3. If the user is just curious about the project but is not asking to actually see it, just respond by chatting.
-4. Only use the comparison compare project tool if the user asks about looking at 2 projects at once.
-5. ALWAYS provide a brief, friendly confirmation message in the 'content' field when you call a tool (e.g., "Sure, let's take a look at my projects!").
-"""
+        llm_service.refresh_context()
             
         return {"success": True, "project": project_entry}
     except HTTPException as he:

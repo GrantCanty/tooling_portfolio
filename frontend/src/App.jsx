@@ -10,7 +10,13 @@ function App() {
 
   const handleToolCall = (toolCall) => {
     if (toolCall.name === 'navigate_to_view') {
-      setViewState({ view: toolCall.arguments.view, id: toolCall.arguments.id });
+      setViewState({ 
+        view: toolCall.arguments.view, 
+        id: toolCall.arguments.id,
+        tab: toolCall.arguments.tab,
+        branch: toolCall.arguments.branch,
+        filePath: toolCall.arguments.file_path
+      });
     } else if (toolCall.name === 'compare_projects') {
       setViewState({ view: 'compare', id1: toolCall.arguments.id1, id2: toolCall.arguments.id2 });
     }

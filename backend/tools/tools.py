@@ -3,7 +3,7 @@ navigate_to_view = {
     "type": "function",
     "function": {
         "name": "navigate_to_view",
-        "description": "Navigate the user interface to a specific view based on their request.",
+        "description": "Navigate the user interface to a specific view based on their request, with optional arguments to focus on specific tabs, branches, or files in project explorer.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -14,7 +14,20 @@ navigate_to_view = {
                 },
                 "id": {
                     "type": "string",
-                    "description": "Optional ID for a specific project or item to focus on."
+                    "description": "Optional ID for a specific project or item (e.g. 'imported-bruit' or 'music-gen-app') to focus on."
+                },
+                "tab": {
+                    "type": "string",
+                    "enum": ["code", "commits"],
+                    "description": "Optional tab to select in projects details view."
+                },
+                "branch": {
+                    "type": "string",
+                    "description": "Optional branch name to switch to in projects details view."
+                },
+                "file_path": {
+                    "type": "string",
+                    "description": "Optional relative file path of the file to open in projects details view (e.g. 'main.go')."
                 }
             },
             "required": ["view"]
