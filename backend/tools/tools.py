@@ -37,3 +37,22 @@ compare_projects = {
         }
     }
 }
+
+read_project_file = {
+    "type": "function",
+    "function": {
+        "name": "read_project_file",
+        "description": "Read the contents of a specific file in the active project to answer questions about the code.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "The relative path of the file to read (e.g. 'main.go', 'src/App.jsx')."
+                }
+            },
+            "required": ["file_path"]
+        }
+    }
+}
+

@@ -3,21 +3,33 @@
     "id": "ai-computer-use",
     "title": "VLM Computer Automation",
     "description": "Using VLMs to click legacy UI and automate the verification and approval of certain documents",
-    "technologies": ["VLM", "Python", "Computer Vision"],
+    "technologies": [
+      "VLM",
+      "Python",
+      "Computer Vision"
+    ],
     "image": "/images/ai-computer-use.webp"
   },
   {
     "id": "music-gen-app",
     "title": "Melody Maker",
     "description": "A React app that generates MIDI files from live recordings",
-    "technologies": ["React", "Web Audio API", "Tone.js"],
+    "technologies": [
+      "React",
+      "Web Audio API",
+      "Tone.js"
+    ],
     "image": "/images/music-gen-app.webp"
   },
   {
     "id": "crypto-trader",
     "title": "Crypto Trader",
-    "description": "A Crypto client using Golang to stream crypto prices and a backend to place trades and manage risk",
-    "technologies": ["Golang", "WebSockets", "Finance"],
+    "description": "A Go client to interact with the Kraken Crypto Exchange WebSocket & Rest APIs",
+    "technologies": [
+      "Go",
+      "WebSockets",
+      "Kraken API"
+    ],
     "image": "/images/crypto-trader.webp"
   }
 ]

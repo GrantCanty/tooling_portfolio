@@ -2,7 +2,7 @@ import os
 import json
 from openai import OpenAI
 from dotenv import load_dotenv
-from tools.tools import navigate_to_view, compare_projects
+from tools.tools import navigate_to_view, compare_projects, read_project_file
 import logging
 from datetime import datetime
 
@@ -37,7 +37,8 @@ RULES:
 """     
         self.tools = [
             navigate_to_view,
-            compare_projects
+            compare_projects,
+            read_project_file
         ]
 
     def _load_context(self):
@@ -101,26 +102,126 @@ RULES:
             print(f"Error loading context: {e}")
             return "CANDIDATE PROFILE: Grant, Gen AI Developer."
 
-    async def chat(self, message: str, history: list, current_view: str = None):
+    def _read_project_file_content(self, project_id: str, file_path: str) -> str:
+        if not project_id:
+            return "Error: No active project context to read files from."
+        
+        storage_path = "/storage"
+        if not os.path.exists(storage_path):
+            storage_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../storage"))
+
+        detail_path = os.path.join(storage_path, f"project-{project_id}.json")
+        if not os.path.exists(detail_path):
+            return f"Error: Details for project '{project_id}' not found."
+
+        try:
+            with open(detail_path, "r") as f:
+                proj = json.load(f)
+            files = proj.get("files", {})
+            
+            # 1. Try exact match
+            if file_path in files:
+                return files[file_path]
+                
+            # 2. Try normalized path matches (fuzzy)
+            norm_path = file_path.replace("\\", "/").strip("/")
+            for k, content in files.items():
+                k_norm = k.replace("\\", "/").strip("/")
+                if k_norm == norm_path or k_norm.endswith("/" + norm_path) or norm_path.endswith("/" + k_norm):
+                    return content
+                    
+            return f"Error: File '{file_path}' not found in project '{project_id}'. Available files: {list(files.keys())}"
+        except Exception as e:
+            return f"Error reading file '{file_path}': {str(e)}"
+
+    async def chat(self, message: str, history: list, current_view: str = None, current_project_id: str = None):
         dynamic_instruction = self.system_instruction
         if current_view:
             dynamic_instruction += f"\n\nCURRENT STATE: The user is currently looking at the '{current_view}' view. Do not use the navigate_to_view tool to navigate to this view, as they are already there. If they ask about something on this view, just respond conversationally.\n\nTODAY'S DATE: {datetime.now().strftime('%Y-%m-%d')}"
 
+        if current_project_id:
+            storage_path = "/storage"
+            if not os.path.exists(storage_path):
+                storage_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../storage"))
+            
+            detail_path = os.path.join(storage_path, f"project-{current_project_id}.json")
+            if os.path.exists(detail_path):
+                try:
+                    with open(detail_path, "r") as f:
+                        proj_details = json.load(f)
+                    file_list = proj_details.get("file_paths", [])
+                    file_list_str = ", ".join(file_list)
+                    dynamic_instruction += f"""
+
+ACTIVE PROJECT CONTEXT:
+You are currently viewing the project '{proj_details.get('title')}' (id: '{current_project_id}').
+Project description: {proj_details.get('description')}
+GitHub Repository: {proj_details.get('github_url', 'N/A')}
+
+Available files in this project:
+[{file_list_str}]
+
+If the user asks questions about specific code files, structure, or implementation details of this project, you MUST use the `read_project_file` tool to retrieve the content of the file and read it before explaining. Do not make up code!
+"""
+                except Exception as e:
+                    logger.error(f"Error loading project details for context: {e}")
+
         messages = [{"role": "system", "content": dynamic_instruction}]
         for msg in history:
+            # Clean roles if needed, ensure they fit system/user/assistant/tool
             messages.append(msg)
         messages.append({"role": "user", "content": message})
 
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=messages,
-            tools=self.tools,
-            tool_choice="auto"
-        )
+        # Tool execution loop (max 3 runs to avoid infinite loops)
+        loop_count = 0
+        while loop_count < 3:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                tools=self.tools,
+                tool_choice="auto"
+            )
 
-        message_obj = response.choices[0].message
-        
-        # If there are tool calls, we return them along with the content
+            message_obj = response.choices[0].message
+            
+            # Check if there are tool calls to resolve
+            if message_obj.tool_calls:
+                # We need to distinguish between backend tools (like read_project_file)
+                # and frontend tools (like navigate_to_view or compare_projects)
+                backend_tool_calls = []
+                frontend_tool_calls = []
+                
+                for tool_call in message_obj.tool_calls:
+                    if tool_call.function.name == "read_project_file":
+                        backend_tool_calls.append(tool_call)
+                    else:
+                        frontend_tool_calls.append(tool_call)
+                
+                if backend_tool_calls:
+                    # Append assistant's response with tool calls to history
+                    messages.append(message_obj)
+                    
+                    # Execute backend tools and append results
+                    for tool_call in backend_tool_calls:
+                        args = json.loads(tool_call.function.arguments)
+                        file_path = args.get("file_path", "")
+                        content = self._read_project_file_content(current_project_id, file_path)
+                        
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": tool_call.id,
+                            "name": "read_project_file",
+                            "content": content
+                        })
+                    loop_count += 1
+                    continue # Re-submit messages to the LLM with tool outputs
+                
+                # If only frontend tool calls, break and return them to the client
+                break
+            
+            break # No tool calls at all, return normal message
+
+        # Format tool calls for frontend
         tool_calls = []
         if message_obj.tool_calls:
             for tool_call in message_obj.tool_calls:
@@ -128,7 +229,6 @@ RULES:
                     "name": tool_call.function.name,
                     "arguments": json.loads(tool_call.function.arguments)
                 })
-        
 
         return {
             "content": message_obj.content,
