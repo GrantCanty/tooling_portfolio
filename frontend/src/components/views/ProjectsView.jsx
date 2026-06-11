@@ -38,6 +38,10 @@ const ProjectsView = ({ id, onNavigate }) => {
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState('');
 
+  // Branch switcher state
+  const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
+  const [branchSearch, setBranchSearch] = useState('');
+
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8888';
 
   // Fetch the list of projects for the grid
@@ -61,11 +65,15 @@ const ProjectsView = ({ id, onNavigate }) => {
     if (!id) {
       setProjectDetails(null);
       setSelectedFile(null);
+      setIsBranchDropdownOpen(false);
+      setBranchSearch('');
       return;
     }
 
     const fetchProjectDetails = async () => {
       setDetailLoading(true);
+      setIsBranchDropdownOpen(false);
+      setBranchSearch('');
       try {
         const response = await axios.get(`${apiUrl}/data/project-${id}`);
         setProjectDetails(response.data);
@@ -112,6 +120,29 @@ const ProjectsView = ({ id, onNavigate }) => {
       setImportError(error.response?.data?.detail || "Failed to import project. Please check the URL.");
     } finally {
       setImporting(false);
+    }
+  };
+
+  const handleBranchChange = async (branchName) => {
+    setIsBranchDropdownOpen(false);
+    if (!projectDetails || !projectDetails.github_url) return;
+    
+    setDetailLoading(true);
+    try {
+      const response = await axios.post(`${apiUrl}/import`, { 
+        repo_url: projectDetails.github_url,
+        branch: branchName
+      });
+      if (response.data.success) {
+        const detailRes = await axios.get(`${apiUrl}/data/project-${id}`);
+        setProjectDetails(detailRes.data);
+        setSelectedFile(null);
+      }
+    } catch (error) {
+      console.error("Error switching branch:", error);
+      alert(error.response?.data?.detail || "Failed to switch branch");
+    } finally {
+      setDetailLoading(false);
     }
   };
 
@@ -221,10 +252,56 @@ const ProjectsView = ({ id, onNavigate }) => {
 
           {/* Subbar */}
           <div className="github-subbar">
-            <div className="branch-select">
-              <GitBranch size={14} />
-              <span>main</span>
-            </div>
+            {projectDetails.branches && projectDetails.branches.length > 0 ? (
+              <div className="branch-dropdown-container">
+                <button 
+                  className="branch-select-btn"
+                  onClick={() => setIsBranchDropdownOpen(!isBranchDropdownOpen)}
+                >
+                  <GitBranch size={14} />
+                  <span>{projectDetails.active_branch || 'main'}</span>
+                  <span className="chevron-down">▼</span>
+                </button>
+                {isBranchDropdownOpen && (
+                  <>
+                    <div className="dropdown-overlay-dismiss" onClick={() => setIsBranchDropdownOpen(false)} />
+                    <div className="branch-dropdown-menu glass">
+                      <div className="dropdown-header">
+                        <span>Switch branches/tags</span>
+                        <button className="close-dropdown-btn" onClick={() => setIsBranchDropdownOpen(false)}>×</button>
+                      </div>
+                      <div className="dropdown-filter">
+                        <input 
+                          type="text" 
+                          placeholder="Filter branches..." 
+                          value={branchSearch}
+                          onChange={(e) => setBranchSearch(e.target.value)}
+                          autoFocus
+                        />
+                      </div>
+                      <div className="dropdown-list">
+                        {projectDetails.branches
+                          .filter(b => b.toLowerCase().includes(branchSearch.toLowerCase()))
+                          .map(branchName => (
+                            <div 
+                              key={branchName} 
+                              className={`dropdown-item ${branchName === (projectDetails.active_branch || 'main') ? 'active' : ''}`}
+                              onClick={() => handleBranchChange(branchName)}
+                            >
+                              {branchName}
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="branch-select disabled">
+                <GitBranch size={14} />
+                <span>main</span>
+              </div>
+            )}
             <div className="github-stats">
               <div className="stat-item">
                 <Star size={14} />
