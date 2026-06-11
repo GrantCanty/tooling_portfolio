@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Folder, FileCode, GitBranch, Star, GitFork, ArrowLeft, MessageSquare, Plus, ExternalLink, Loader } from 'lucide-react';
+import { Folder, FileCode, GitBranch, GitCommit, Star, GitFork, ArrowLeft, MessageSquare, Plus, ExternalLink, Loader } from 'lucide-react';
 
 const Github = ({ size = 20, className, style }) => (
   <svg
@@ -42,6 +42,9 @@ const ProjectsView = ({ id, onNavigate }) => {
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
   const [branchSearch, setBranchSearch] = useState('');
 
+  // Active Tab state ('code' or 'commits')
+  const [activeTab, setActiveTab] = useState('code');
+
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8888';
 
   // Fetch the list of projects for the grid
@@ -67,6 +70,7 @@ const ProjectsView = ({ id, onNavigate }) => {
       setSelectedFile(null);
       setIsBranchDropdownOpen(false);
       setBranchSearch('');
+      setActiveTab('code');
       return;
     }
 
@@ -74,6 +78,7 @@ const ProjectsView = ({ id, onNavigate }) => {
       setDetailLoading(true);
       setIsBranchDropdownOpen(false);
       setBranchSearch('');
+      setActiveTab('code');
       try {
         const response = await axios.get(`${apiUrl}/data/project-${id}`);
         setProjectDetails(response.data);
@@ -260,6 +265,30 @@ const ProjectsView = ({ id, onNavigate }) => {
             </div>
           </div>
 
+          {/* Navigation Tabs */}
+          <div className="github-tabs-nav">
+            <button 
+              className={`tab-btn ${activeTab === 'code' ? 'active' : ''}`}
+              onClick={() => setActiveTab('code')}
+            >
+              <FileCode size={16} />
+              <span>Code</span>
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === 'commits' ? 'active' : ''}`}
+              onClick={() => setActiveTab('commits')}
+            >
+              <GitCommit size={16} />
+              <span>Commits</span>
+              {projectDetails.commits && projectDetails.commits.length > 0 && (
+                <span className="tab-count">
+                  {projectDetails.commits.length}
+                  {projectDetails.has_more_commits ? '+' : ''}
+                </span>
+              )}
+            </button>
+          </div>
+
           {/* Subbar */}
           <div className="github-subbar">
             {projectDetails.branches && projectDetails.branches.length > 0 ? (
@@ -325,66 +354,165 @@ const ProjectsView = ({ id, onNavigate }) => {
           </div>
 
           {/* Body Panels */}
-          <div className="github-body">
-            {/* Sidebar Explorer */}
-            <div className="github-sidebar">
-              <div className="sidebar-header">Files</div>
-              <div className="file-tree">
-                {/* README link to clear selection */}
-                <div
-                  className={`tree-node file ${!selectedFile ? 'active-file' : ''}`}
-                  onClick={() => setSelectedFile(null)}
-                  style={{ paddingLeft: '8px' }}
-                >
-                  <FileCode size={16} stroke={!selectedFile ? "#58a6ff" : "var(--text-secondary)"} />
-                  <span>README.md</span>
+          {activeTab === 'code' ? (
+            <div className="github-body">
+              {/* Sidebar Explorer */}
+              <div className="github-sidebar">
+                <div className="sidebar-header">Files</div>
+                <div className="file-tree">
+                  {/* README link to clear selection */}
+                  <div
+                    className={`tree-node file ${!selectedFile ? 'active-file' : ''}`}
+                    onClick={() => setSelectedFile(null)}
+                    style={{ paddingLeft: '8px' }}
+                  >
+                    <FileCode size={16} stroke={!selectedFile ? "#58a6ff" : "var(--text-secondary)"} />
+                    <span>README.md</span>
+                  </div>
+                  {renderTree(treeData)}
                 </div>
-                {renderTree(treeData)}
               </div>
-            </div>
 
-            {/* Content Display Workspace */}
-            <div className="github-content">
-              {selectedFile ? (
-                // Code File Viewer
-                <div className="code-viewer-container">
-                  <div className="editor-header">
-                    <div className="file-tabs">
-                      <div className="file-tab">
+              {/* Content Display Workspace */}
+              <div className="github-content">
+                {selectedFile ? (
+                  // Code File Viewer
+                  <div className="code-viewer-container">
+                    <div className="editor-header">
+                      <div className="file-tabs">
+                        <div className="file-tab">
+                          <FileCode size={14} />
+                          <span>{selectedFile.split('/').pop()}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="editor-body">
+                      <div className="line-numbers">
+                        {(fileContent || '').split('\n').map((_, index) => (
+                          <div key={index}>{index + 1}</div>
+                        ))}
+                      </div>
+                      <pre className="code-pre">
+                        <code>{fileContent}</code>
+                      </pre>
+                    </div>
+                  </div>
+                ) : (
+                  // README Display
+                  <div className="readme-container">
+                    <div className="readme-card">
+                      <div className="readme-header">
                         <FileCode size={14} />
-                        <span>{selectedFile.split('/').pop()}</span>
+                        <span>README.md</span>
+                      </div>
+                      <div className="readme-body markdown-content">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {projectDetails.readme}
+                        </ReactMarkdown>
                       </div>
                     </div>
                   </div>
-                  <div className="editor-body">
-                    <div className="line-numbers">
-                      {(fileContent || '').split('\n').map((_, index) => (
-                        <div key={index}>{index + 1}</div>
-                      ))}
-                    </div>
-                    <pre className="code-pre">
-                      <code>{fileContent}</code>
-                    </pre>
-                  </div>
-                </div>
-              ) : (
-                // README Display
-                <div className="readme-container">
-                  <div className="readme-card">
-                    <div className="readme-header">
-                      <FileCode size={14} />
-                      <span>README.md</span>
-                    </div>
-                    <div className="readme-body markdown-content">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {projectDetails.readme}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
+          ) : (
+            // COMMITS VIEW
+            <div className="github-body commits-view-body">
+              <div className="commits-container">
+                <div className="commits-header">
+                  <GitCommit size={18} />
+                  <h3>Commit History</h3>
+                </div>
+                <div className="commits-list">
+                  {projectDetails.commits && projectDetails.commits.length > 0 ? (
+                    projectDetails.commits.map((commit) => {
+                      const commitDate = new Date(commit.date).toLocaleDateString(undefined, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      });
+                      
+                      return (
+                        <div key={commit.sha} className="commit-item">
+                          <div className="commit-main">
+                            <div className="commit-message">{commit.message}</div>
+                            <div className="commit-meta">
+                              {commit.author_avatar ? (
+                                <img src={commit.author_avatar} alt={commit.author_login} className="commit-author-avatar" />
+                              ) : (
+                                <div className="commit-author-avatar-placeholder">
+                                  {commit.author_name ? commit.author_name[0].toUpperCase() : 'U'}
+                                </div>
+                              )}
+                              <span className="commit-author-name">
+                                {commit.author_login || commit.author_name || 'Unknown Author'}
+                              </span>
+                              <span className="commit-date">committed on {commitDate}</span>
+                            </div>
+                          </div>
+                          <div className="commit-action">
+                            {projectDetails.github_url && commit.sha ? (
+                              <a 
+                                href={`${projectDetails.github_url}/commit/${commit.sha}`} 
+                                target="_blank" 
+                                rel="noreferrer" 
+                                className="commit-sha-badge"
+                              >
+                                {commit.sha.substring(0, 7)}
+                              </a>
+                            ) : (
+                              <span className="commit-sha-badge-static">
+                                {commit.sha ? commit.sha.substring(0, 7) : 'mocksha'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    // Fallback placeholders for local projects
+                    [
+                      {
+                        sha: "a1b2c3d4e5f6g7h8i9j0",
+                        message: `Initial release of ${projectDetails.title || 'project'}`,
+                        author_name: "Grant Canty",
+                        date: "2026-05-01T12:00:00Z"
+                      },
+                      {
+                        sha: "f9e8d7c6b5a43210zyxw",
+                        message: "Configure build pipelines and asset compression",
+                        author_name: "Grant Canty",
+                        date: "2026-05-15T15:30:00Z"
+                      }
+                    ].map((commit) => {
+                      const commitDate = new Date(commit.date).toLocaleDateString(undefined, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      });
+                      return (
+                        <div key={commit.sha} className="commit-item mock">
+                          <div className="commit-main">
+                            <div className="commit-message">{commit.message}</div>
+                            <div className="commit-meta">
+                              <div className="commit-author-avatar-placeholder">G</div>
+                              <span className="commit-author-name">{commit.author_name}</span>
+                              <span className="commit-date">committed on {commitDate}</span>
+                            </div>
+                          </div>
+                          <div className="commit-action">
+                            <span className="commit-sha-badge-static">{commit.sha.substring(0, 7)}</span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <style jsx>{`

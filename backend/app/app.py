@@ -60,7 +60,7 @@ async def chat(request: ChatRequest):
 @app.post("/import")
 async def import_project(request: ImportRequest):
     try:
-        from .importer import parse_github_url, fetch_repo_metadata, fetch_repo_branches, download_and_parse_repo, infer_technologies
+        from .importer import parse_github_url, fetch_repo_metadata, fetch_repo_branches, fetch_repo_commits, download_and_parse_repo, infer_technologies
         
         owner, repo = parse_github_url(request.repo_url)
         if not owner or not repo:
@@ -89,6 +89,8 @@ async def import_project(request: ImportRequest):
         technologies = infer_technologies(file_paths, primary_lang)
         project_id = f"imported-{repo.lower()}"
         
+        commits, has_more = fetch_repo_commits(owner, repo, active_branch)
+        
         project_details = {
             "id": project_id,
             "title": get_project_title(project_id, title),
@@ -101,7 +103,9 @@ async def import_project(request: ImportRequest):
             "stars": stars,
             "forks": forks,
             "branches": branches,
-            "active_branch": active_branch
+            "active_branch": active_branch,
+            "commits": commits,
+            "has_more_commits": has_more
         }
         
         storage_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../storage"))
@@ -161,7 +165,7 @@ RULES:
 
 def sync_project_background(project_id: str, github_url: str):
     try:
-        from .importer import parse_github_url, fetch_repo_metadata, download_and_parse_repo, infer_technologies, fetch_repo_branches
+        from .importer import parse_github_url, fetch_repo_metadata, download_and_parse_repo, infer_technologies, fetch_repo_branches, fetch_repo_commits
         
         owner, repo = parse_github_url(github_url)
         if not owner or not repo:
@@ -202,6 +206,7 @@ def sync_project_background(project_id: str, github_url: str):
             return
             
         technologies = infer_technologies(file_paths, primary_lang)
+        commits, has_more = fetch_repo_commits(owner, repo, active_branch)
         
         project_details = {
             "id": project_id,
@@ -215,7 +220,9 @@ def sync_project_background(project_id: str, github_url: str):
             "stars": stars,
             "forks": forks,
             "branches": branches,
-            "active_branch": active_branch
+            "active_branch": active_branch,
+            "commits": commits,
+            "has_more_commits": has_more
         }
         
         storage_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../storage"))

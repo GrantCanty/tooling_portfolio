@@ -43,6 +43,34 @@ def fetch_repo_branches(owner: str, repo: str):
         print(f"Error fetching branches for {owner}/{repo}: {e}")
         return ["main"]
 
+def fetch_repo_commits(owner: str, repo: str, branch: str = "main"):
+    url = f"https://api.github.com/repos/{owner}/{repo}/commits?sha={branch}"
+    req = urllib.request.Request(
+        url,
+        headers={"User-Agent": "Grant-Portfolio-Agent/1.0"}
+    )
+    try:
+        with urllib.request.urlopen(req) as response:
+            commits_data = json.loads(response.read().decode('utf-8'))
+            formatted_commits = []
+            for c in commits_data[:15]:
+                commit_info = c.get("commit", {})
+                author_info = c.get("author") or {}
+                formatted_commits.append({
+                    "sha": c.get("sha"),
+                    "message": commit_info.get("message"),
+                    "author_name": commit_info.get("author", {}).get("name"),
+                    "author_email": commit_info.get("author", {}).get("email"),
+                    "author_login": author_info.get("login"),
+                    "author_avatar": author_info.get("avatar_url"),
+                    "date": commit_info.get("author", {}).get("date")
+                })
+            has_more = len(commits_data) > 15
+            return formatted_commits, has_more
+    except Exception as e:
+        print(f"Error fetching commits for {owner}/{repo} on branch {branch}: {e}")
+        return [], False
+
 def download_and_parse_repo(owner: str, repo: str, default_branch: str = "main"):
     zip_url = f"https://github.com/{owner}/{repo}/archive/refs/heads/{default_branch}.zip"
     req = urllib.request.Request(

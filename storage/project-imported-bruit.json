@@ -1,6 +1,6 @@
 {
   "id": "imported-bruit",
-  "title": "bruit",
+  "title": "Crypto Trader",
   "description": null,
   "technologies": [
     "Go"
@@ -135,5 +135,143 @@
     "fix/remove_panic",
     "main"
   ],
-  "active_branch": "fix/remove_panic"
+  "active_branch": "main",
+  "commits": [
+    {
+      "sha": "394ea7b915811fc8beaaa67b2a58553bb407a59a",
+      "message": "Merge pull request #2 from GrantCanty/fix/remove_panic\n\nFix/remove panic",
+      "author_name": "Grant Canty",
+      "author_email": "54595001+GrantCanty@users.noreply.github.com",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-07T01:57:32Z"
+    },
+    {
+      "sha": "cfeea5d98935fb38f2ad2247816b31758b43cb14",
+      "message": "removed panics in *Decoder functions. added retry options for *SocketGuard functions",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-07T01:52:50Z"
+    },
+    {
+      "sha": "a7fa65cd518d11eba03921c0ed011b70f06ee8bc",
+      "message": "removed panics from the InfluxDB file",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-07T01:30:20Z"
+    },
+    {
+      "sha": "c2f4275da4196d827403afc0b27a003c7032eab0",
+      "message": "remoed ws_wrapper as it was not used anymore and contained a panic call",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-07T01:19:14Z"
+    },
+    {
+      "sha": "4b47705d042597b233c27779d973e29136f8cf5c",
+      "message": "removed panic from settings files. changes to upstream files and interfaces to implement the changes made",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-07T01:11:20Z"
+    },
+    {
+      "sha": "e23964738b2d03215c5688f7598a18780f8f90ed",
+      "message": "removed all panic calls in the kraken_client file",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-07T00:57:30Z"
+    },
+    {
+      "sha": "70465b783a3d940d813cb46face0551b7216607a",
+      "message": "making error handling more robust",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-07T00:02:18Z"
+    },
+    {
+      "sha": "c9d677ce4a271fe97b88ece635f401acd5a99de3",
+      "message": "fixed deadlock issue with the websocket client",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-06T23:43:03Z"
+    },
+    {
+      "sha": "c1f8007d65e26ed83c35c75c3754d95988046a28",
+      "message": "adding error outputs to the interface of BruitCryptoClient",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-06T22:40:55Z"
+    },
+    {
+      "sha": "dad5e1f6c8235495936248d39abf7525fab095c0",
+      "message": "Merge pull request #1 from GrantCanty/fix/remove_panic\n\nFix/remove panic",
+      "author_name": "Grant Canty",
+      "author_email": "54595001+GrantCanty@users.noreply.github.com",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-06T22:38:24Z"
+    },
+    {
+      "sha": "25dd3524a29e61d72857e261b66d7665116ac86d",
+      "message": "removed logging from ws_wrapper. will be added to go routines in the engine",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-06T22:35:51Z"
+    },
+    {
+      "sha": "f34c937c9f19566dd94ae148eae03476631615c6",
+      "message": "removed redudant return statement from PrivDecoder func",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-06T22:32:46Z"
+    },
+    {
+      "sha": "159942f17bd36bb0a4bb9549bc8568ca875e9211",
+      "message": "added error handling to AddOrder func",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-06T22:32:01Z"
+    },
+    {
+      "sha": "c89bdb5ddeb821f87a9e189ddf0c8b69f71a5b71",
+      "message": "added error handling to CancelOrder func",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-06T22:31:20Z"
+    },
+    {
+      "sha": "9e9d846b28f40fd5e344c3dd4b776cb57f754a4a",
+      "message": "added error handling to CancelAll func",
+      "author_name": "Grant Canty",
+      "author_email": "gc933815@ohio.edu",
+      "author_login": "GrantCanty",
+      "author_avatar": "https://avatars.githubusercontent.com/u/54595001?v=4",
+      "date": "2026-06-06T22:30:46Z"
+    }
+  ],
+  "has_more_commits": true
 }
