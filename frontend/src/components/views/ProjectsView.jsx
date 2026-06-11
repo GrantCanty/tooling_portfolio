@@ -219,8 +219,10 @@ const ProjectsView = ({ id, onNavigate }) => {
   if (loading) return <div className="loading">Loading Projects...</div>;
 
   // RENDER DETAILED GITHUB VIEW
-  if (id && projectDetails) {
-    if (detailLoading) return <div className="loading">Loading repository details...</div>;
+  if (id) {
+    if (!projectDetails || (detailLoading && projectDetails.id !== id)) {
+      return <div className="loading">Loading repository details...</div>;
+    }
 
     const treeData = buildTree(projectDetails.file_paths || []);
     const fileContent = selectedFile ? projectDetails.files[selectedFile] : null;
@@ -234,6 +236,14 @@ const ProjectsView = ({ id, onNavigate }) => {
         </div>
 
         <div className="github-layout glass">
+          {detailLoading && (
+            <div className="github-loading-overlay">
+              <div className="spinner-container">
+                <Loader size={40} className="spin" />
+                <span>Switching branch...</span>
+              </div>
+            </div>
+          )}
           {/* Header */}
           <div className="github-header">
             <div className="github-repo-title">
