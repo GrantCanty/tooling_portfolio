@@ -6,3 +6,4 @@ ROADMAP.md
 *.webp
 
 backend/app/ai/loadingg.py
+*.DS_Store
