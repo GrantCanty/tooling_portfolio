@@ -35,7 +35,6 @@ RULES:
 4. Only use the comparison compare project tool if the user asks about looking at 2 projects at once.
 5. ALWAYS provide a brief, friendly confirmation message in the 'content' field when you call a tool (e.g., "Sure, let's take a look at my projects!").
 """     
-        logger.info(self.system_instruction)
         self.tools = [
             navigate_to_view,
             compare_projects
@@ -129,6 +128,7 @@ RULES:
                     "name": tool_call.function.name,
                     "arguments": json.loads(tool_call.function.arguments)
                 })
+        
 
         return {
             "content": message_obj.content,
