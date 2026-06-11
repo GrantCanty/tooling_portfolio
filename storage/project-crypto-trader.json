@@ -1,6 +1,6 @@
 {
   "id": "crypto-trader",
-  "title": "Crypto Trader",
+  "title": "bruit",
   "description": null,
   "technologies": [
     "Go"
@@ -126,5 +126,14 @@
     "go.sum",
     "main.go",
     "testing/getOHLC_test.go"
-  ]
+  ],
+  "stars": 0,
+  "forks": 0,
+  "branches": [
+    "feature/add_testing",
+    "fix/disconnection_handling",
+    "fix/remove_panic",
+    "main"
+  ],
+  "active_branch": "main"
 }

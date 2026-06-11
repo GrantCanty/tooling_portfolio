@@ -23,13 +23,11 @@
   },
   {
     "id": "imported-bruit",
-    "title": "Crypto Trader",
-    "description": "A Go client to interact with the Kraken Crypto Exchange WebSocket & Rest APIs",
+    "title": "bruit",
+    "description": null,
     "technologies": [
-      "Go",
-      "WebSockets",
-      "Kraken API"
+      "Go"
     ],
-    "image": "/images/crypto-trader.webp"
+    "image": null
   }
 ]

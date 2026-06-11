@@ -29,6 +29,20 @@ def fetch_repo_metadata(owner: str, repo: str):
         print(f"Error fetching metadata for {owner}/{repo}: {e}")
         return {}
 
+def fetch_repo_branches(owner: str, repo: str):
+    url = f"https://api.github.com/repos/{owner}/{repo}/branches"
+    req = urllib.request.Request(
+        url,
+        headers={"User-Agent": "Grant-Portfolio-Agent/1.0"}
+    )
+    try:
+        with urllib.request.urlopen(req) as response:
+            branches_data = json.loads(response.read().decode('utf-8'))
+            return [b["name"] for b in branches_data]
+    except Exception as e:
+        print(f"Error fetching branches for {owner}/{repo}: {e}")
+        return ["main"]
+
 def download_and_parse_repo(owner: str, repo: str, default_branch: str = "main"):
     zip_url = f"https://github.com/{owner}/{repo}/archive/refs/heads/{default_branch}.zip"
     req = urllib.request.Request(

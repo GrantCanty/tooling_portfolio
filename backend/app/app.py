@@ -42,6 +42,7 @@ class ChatRequest(BaseModel):
 
 class ImportRequest(BaseModel):
     repo_url: str
+    branch: Optional[str] = None
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
@@ -59,7 +60,7 @@ async def chat(request: ChatRequest):
 @app.post("/import")
 async def import_project(request: ImportRequest):
     try:
-        from .importer import parse_github_url, fetch_repo_metadata, download_and_parse_repo, infer_technologies
+        from .importer import parse_github_url, fetch_repo_metadata, fetch_repo_branches, download_and_parse_repo, infer_technologies
         
         owner, repo = parse_github_url(request.repo_url)
         if not owner or not repo:
@@ -73,7 +74,15 @@ async def import_project(request: ImportRequest):
         stars = meta.get("stargazers_count", 0)
         forks = meta.get("forks_count", 0)
         
-        files, readme, file_paths = download_and_parse_repo(owner, repo, default_branch)
+        branches = fetch_repo_branches(owner, repo)
+        active_branch = request.branch if request.branch else default_branch
+        if branches and active_branch not in branches:
+            if default_branch in branches:
+                active_branch = default_branch
+            elif len(branches) > 0:
+                active_branch = branches[0]
+                
+        files, readme, file_paths = download_and_parse_repo(owner, repo, active_branch)
         if not files:
             raise HTTPException(status_code=400, detail="Failed to fetch files from repository")
             
@@ -90,7 +99,9 @@ async def import_project(request: ImportRequest):
             "files": files,
             "file_paths": file_paths,
             "stars": stars,
-            "forks": forks
+            "forks": forks,
+            "branches": branches,
+            "active_branch": active_branch
         }
         
         storage_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../storage"))
@@ -150,7 +161,7 @@ RULES:
 
 def sync_project_background(project_id: str, github_url: str):
     try:
-        from .importer import parse_github_url, fetch_repo_metadata, download_and_parse_repo, infer_technologies
+        from .importer import parse_github_url, fetch_repo_metadata, download_and_parse_repo, infer_technologies, fetch_repo_branches
         
         owner, repo = parse_github_url(github_url)
         if not owner or not repo:
@@ -167,7 +178,26 @@ def sync_project_background(project_id: str, github_url: str):
         stars = meta.get("stargazers_count", 0)
         forks = meta.get("forks_count", 0)
         
-        files, readme, file_paths = download_and_parse_repo(owner, repo, default_branch)
+        # Read the existing active branch
+        active_branch = default_branch
+        storage_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../storage"))
+        project_detail_path = os.path.join(storage_dir, f"project-{project_id}.json")
+        if os.path.exists(project_detail_path):
+            try:
+                with open(project_detail_path, "r") as f:
+                    old_details = json.load(f)
+                    active_branch = old_details.get("active_branch", default_branch)
+            except Exception:
+                pass
+                
+        branches = fetch_repo_branches(owner, repo)
+        if branches and active_branch not in branches:
+            if default_branch in branches:
+                active_branch = default_branch
+            elif len(branches) > 0:
+                active_branch = branches[0]
+                
+        files, readme, file_paths = download_and_parse_repo(owner, repo, active_branch)
         if not files:
             return
             
@@ -183,7 +213,9 @@ def sync_project_background(project_id: str, github_url: str):
             "files": files,
             "file_paths": file_paths,
             "stars": stars,
-            "forks": forks
+            "forks": forks,
+            "branches": branches,
+            "active_branch": active_branch
         }
         
         storage_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../storage"))
