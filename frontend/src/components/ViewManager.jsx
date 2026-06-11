@@ -9,13 +9,13 @@ const MusicView = lazy(() => import('./views/MusicView'));
 const GraphView = lazy(() => import('./views/GraphView'));
 const CompareView = lazy(() => import('./views/CompareView'));
 
-const ViewManager = ({ viewState, hasStartedChat }) => {
+const ViewManager = ({ viewState, hasStartedChat, onNavigate }) => {
   const renderView = () => {
     switch (viewState.view) {
       case 'landing':
         return <LandingView hasStartedChat={hasStartedChat} />;
       case 'projects':
-        return <ProjectsView id={viewState.id} />;
+        return <ProjectsView id={viewState.id} onNavigate={onNavigate} />;
       case 'resume':
         return <ResumeView />;
       case 'education':

@@ -5,7 +5,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasStartedChat, currentView }) => {
+const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasStartedChat, currentView, currentProjectId }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [placeholderText, setPlaceholderText] = useState('');
@@ -98,7 +98,8 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
       const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8888'}/chat`, {
         message: input,
         history: messages.slice(-10), // Send last 10 messages for context
-        current_view: currentView
+        current_view: currentView,
+        current_project_id: currentProjectId
       });
 
       let content = response.data.content;
@@ -148,7 +149,7 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
                 transition={{ duration: 0.2 }}
                 className={`message-wrapper ${msg.role}`}
               >
-                <div className="message-bubble">
+                <div className="message-bubble markdown-content">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {msg.content}
                   </ReactMarkdown>

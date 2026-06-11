@@ -37,11 +37,16 @@ function App() {
           onMessageSent={onFirstMessage}
           hasStartedChat={hasStartedChat}
           currentView={viewState.view}
+          currentProjectId={viewState.id}
         />
       </div>
 
       <main className="main-content">
-        <ViewManager viewState={viewState} hasStartedChat={hasStartedChat} />
+        <ViewManager 
+          viewState={viewState} 
+          hasStartedChat={hasStartedChat} 
+          onNavigate={(view, id = null) => setViewState({ view, id })}
+        />
       </main>
     </div>
   );
