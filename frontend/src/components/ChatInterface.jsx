@@ -248,6 +248,11 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
           width: 100%;
         }
 
+        .message-bubble.markdown-content p:last-child,
+        .message-bubble.markdown-content > *:last-child {
+          margin-bottom: 0;
+        }
+
         .assistant .message-bubble {
           background: transparent;
           border: none;
