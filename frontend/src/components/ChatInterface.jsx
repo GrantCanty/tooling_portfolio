@@ -90,6 +90,9 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
     const userMessage = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
+    }
     if (onMessageSent) onMessageSent();
     setIsLoading(true);
 
@@ -251,6 +254,22 @@ const ChatInterface = ({ messages, setMessages, onToolCall, onMessageSent, hasSt
         .message-bubble.markdown-content p:last-child,
         .message-bubble.markdown-content > *:last-child {
           margin-bottom: 0;
+        }
+
+        .message-bubble.markdown-content p,
+        .message-bubble.markdown-content li {
+          color: var(--text-primary);
+        }
+
+        .message-bubble.markdown-content code {
+          font-family: 'Fira Code', 'Courier New', monospace;
+          background: rgba(66, 153, 225, 0.1);
+          color: var(--accent-blue);
+          padding: 2px 4px;
+          border-radius: 4px;
+          font-size: 0.95em;
+          font-weight: 500;
+          vertical-align: baseline;
         }
 
         .assistant .message-bubble {
